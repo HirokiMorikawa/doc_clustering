@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block head %}
+<title>単語ベクトル化</title>
+{% endblock %}
+
+{% block content %}
+<!-- <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a> -->
+
+
+<div class="container">
+<div class="card-panel">
+    <div class="section">
+        <h1>入力した文章</h1>
+        <div class="divider"></div>
+        {% for document in documents %}
+        <p>{{ document }}</p>
+        {% endfor %}
+        <!-- <button href="/word2vec">上記の文書から単語のベクトルを求める</button> -->
+        <!-- <button id="w2v_button">上記の文書から単語のベクトルを求める</button> -->
+        <button id="w2v_button" class="btn waves-effects waves-light">
+            上記の文書を追加して単語のベクトルを求める
+            <i class="material-icons right">assesment</i>
+        </button>
+    </div>
+</div>
+
+<div class="divider"></div>
+<div class="card-panel">
+    <div class="section">
+        <div class="divider"></div>
+        <h2 id="w2v_h">入力した文章の単語ベクトルを表示</h2>
+        <p>word2vecが単語ベクトルを求めます．</p>
+        <p>単語ベクトル間の近さの測り方は，Fuzzy C-Means法でクラスタリングを実行して，10個のクラスタそれぞれに似たもの同士の単語ベクトルを振り分けるようにします．</p>
+        <p>単語ベクトルの視覚化は，PCAを用いて2次元に圧縮したあと，散布図としてグラフにプロットします．</p>
+        <p>ボタンを押すとword2vecとFuzzy C-Means法が実行されます．</p>
+        <div class="divider"></div>
+        <canvas id="myChart"></canvas>
+    </div>
+</div>
+</div>
+<!-- <a href="/">TOPへ戻る</a> -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script>
+
+
+    var ctx = document.getElementById("myChart").getContext("2d");
+    var dataset = [];
+    var button = document.getElementById("w2v_button")
+    button.addEventListener("click", e => {
+        let o = new Button("/word2vec");
+        o.request(button);
+
+    }, false)
+
+    function Button(url) {
+        this.url = url;
+    }
+
+    Button.prototype.request = function (e) {
+        var xmlHttpRequest = new XMLHttpRequest();
+
+        // ajaxの状態基づいた処理をおこなう
+        xmlHttpRequest.onreadystatechange = function () {
+            if (xmlHttpRequest.readyState == 4 && xmlHttpRequest.status == 200) {
+                let response = JSON.parse(xmlHttpRequest.responseText);
+                // let w2v_h2 = document.getElementById("w2v_h")
+                // let div = document.getElementById("vector");
+                // if (div == undefined) {
+                //     div = document.createElement("div");
+                //     div.setAttribute("id", "vector")
+                //     w2v_h2.parentNode.insertBefore(div, w2v_h2.nextSibling);
+                // }
+                // div.innerText = response["vector"];
+                var datasets = response["dict"];
+                var d = [];
+                for (let i = 0; i < datasets.length; i++) {
+                    // datasets[i]["backgroundColor"] = "RGBA(115, 255, 25, 1)";
+                    d.push(
+                        {
+                            label: datasets[i]["label"],
+                            data: [{ x: datasets[i]["data"]["x"], y: datasets[i]["data"]["y"] }],
+                            backgroundColor: datasets[i]["color"]
+                        }
+                    )
+                }
+                // console.log(d);
+                // dataset = d;
+                // chart.update();
+
+                var chart = new Chart(ctx, {
+                    type: "scatter",
+                    data: {
+                        datasets: d
+                    },
+                    options: {
+                        // responsive: true,
+                        legend: {
+                            display: false,
+                        },
+                        //     // position: "bottom",
+                        //     onHover: function (e) {
+                        //         e.target.style.cursor = "pointer";
+                        //     }
+                        // },
+                        // hover: {
+                        //     onHover: function (e) {
+                        //         var point = this.getElementAtEvent(e);
+                        //         if (point.length) e.target.style.cursor = "pointer";
+                        //         else e.target.style.cursor = "default";
+                        //     }
+                        // },
+                        tooltips: {
+                            callbacks: {
+                                title: function (tooltipItem, data) {
+                                    return data.datasets[tooltipItem[0].datasetIndex].label;
+                                },
+                                label: function (tooltipItem, data) {
+                                    const x_pos = tooltipItem.xLabel;
+                                    const y_pos = tooltipItem.yLabel;
+                                    return `(${x_pos}, ${y_pos}`;
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        xmlHttpRequest.open("GET", this.url, true);
+        xmlHttpRequest.send(null);
+    };
+
+</script>
+{% endblock %}

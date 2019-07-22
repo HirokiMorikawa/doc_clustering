@@ -1,0 +1,88 @@
+<!-- <!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Web</title>
+</head>
+
+<body>
+    <form action="/action" method="post">
+        <textarea rows="10" name="documents"></textarea>
+        <input type="submit" value="submit" />
+    </form>
+    {% if document==None %}
+    <h1>文章を入力してください</h1>
+    {% else %}
+    <h1>入力された文章</h1>
+    {{ document }}
+    {% endif %}
+</body>
+
+</html> -->
+{% extends "base.html" %}
+{% block head %}
+<title>Web</title>
+{% endblock %}
+{% block content %}
+
+<div class="container">
+    <div class="card-panel">
+        <h1>入力フォーム</h1>
+        <div class="divider"></div>
+        <p>たくさんの文章を入力するとWord2vecで単語ベクトルを計算することができます．</p>
+        <div class="row">
+            <form class="col s12" action="/action" method="post">
+                <div class="input-field col s12">
+                    <textarea id="textarea1" class="materialize-textarea" name="documents"></textarea>
+                    <label for="textarea1">文章</label>
+                </div>
+                <!-- <input type="submit" value="submit" /> -->
+                <button class="btn waves-effects waves-light" type="submit" name="action">
+                    送信
+                    <i class="material-icons right">send</i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- <a id="modal-btn" class="waves-effects waves-light btn modal-trigger" href="#modal1">文章入力フォームを表示</a>
+<div id="modal1" class="modal">
+    <div class="modal-content">
+        <form action="/action" method="post">
+            <textarea rows="10" name="documents"></textarea>
+            <input type="submit" value="submit" />
+        </form>
+    </div>
+</div> -->
+
+<!-- {% if document==None %}
+<h1>文章を入力してください</h1>
+{% else %}
+<h1>入力された文章</h1> -->
+<!-- {{ document }} -->
+
+<!-- {% endif %} -->
+<script>
+    // var f = false;
+    // document.addEventListener("DOMContentLoaded", function() {
+    //     var options = {
+
+    //     };
+    //     var elems = document.querySelectorAll(".modal");
+    //     var instances = M.Modal.init(elems, options);
+    //     var btn = document.getElementById("modal-btn");
+    //     btn.addEventListener("click", function(e) {
+    //         if(!f) {
+    //             instances.open();
+    //             f = true;
+    //         } else {
+    //             instances.close();
+    //             f = false;
+    //         }
+    //     }, false)
+    // });
+</script>
+{% endblock %}
